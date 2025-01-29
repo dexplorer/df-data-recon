@@ -28,10 +28,14 @@ async def apply_rules(dataset_id: str, env: str = "dev"):
 
     logging.info("Configs are set")
 
-    logging.info("Start applying data reconciliation rules on the dataset %s", dataset_id)
+    logging.info(
+        "Start applying data reconciliation rules on the dataset %s", dataset_id
+    )
     dr_check_results = drc.apply_dr_rules(dataset_id=dataset_id)
 
-    logging.info("Finished applying data reconciliation rules on the dataset %s", dataset_id)
+    logging.info(
+        "Finished applying data reconciliation rules on the dataset %s", dataset_id
+    )
 
     return {"results": dr_check_results}
 
