@@ -52,12 +52,12 @@ effective_date,account_id,asset_id,asset_value
 ##### Reconciliation Dataset (acct_positions_20241226.recon)
 ```
 "effective_date"|"measure"|"column"|"group_by_column_names"|"group_by_column_values"|"measure_value"
-2024-12-26|"count"|"account_id"|["all"]|["all"]|9
-2024-12-26|"count_median"|["asset_id"]|["all"]|["all"]|1
-2024-12-26|"sum"|"asset_value"|["asset_id"]|["1"]|-65000.0
-2024-12-26|"sum"|"asset_value"|["asset_id"]|["2"]|-5000.0
-2024-12-26|"distinct"|"account_id"|["asset_id"]|["1"]|7
-2024-12-26|"distinct"|"account_id"|["asset_id"]|["2"]|2
+2024-12-26|"count"|"account_id"|"all"|"all"|9
+2024-12-26|"count_median"|"asset_id"|"all"|"all"|"2"
+2024-12-26|"sum"|"asset_value"|"asset_id"|"1"|-65000.0
+2024-12-26|"sum"|"asset_value"|"asset_id"|"2"|-5000.0
+2024-12-26|"distinct"|"account_id"|"asset_id"|"1"|7
+2024-12-26|"distinct"|"account_id"|"asset_id"|"2"|2
 
 ```
 
@@ -144,7 +144,8 @@ These are metadata that would be captured via the data reconciliation applicatio
       }
     ]
   }
-```
+  
+  ```
 
   ##### dr_rules 
 ```
@@ -156,7 +157,7 @@ These are metadata that would be captured via the data reconciliation applicatio
         "exp_id": "1",
         "rule_fail_action": "abort",
         "column": "account_id", 
-        "group_by_columns": [
+        "group_by_column_names": [
           "all"
         ] 
       },
@@ -173,7 +174,7 @@ These are metadata that would be captured via the data reconciliation applicatio
         "exp_id": "3",
         "rule_fail_action": "abort",
         "column": "asset_value", 
-        "group_by_columns": [
+        "group_by_column_names": [
           "asset_id"
         ] 
       },
@@ -183,8 +184,8 @@ These are metadata that would be captured via the data reconciliation applicatio
         "exp_id": "4",
         "rule_fail_action": "abort",
         "column": "account_id", 
-        "group_by_columns": [
-          "account_id"
+        "group_by_column_names": [
+          "asset_id"
         ] 
       }
     ]
@@ -196,9 +197,102 @@ These are metadata that would be captured via the data reconciliation applicatio
 
 ```
 Data reconciliation check results for dataset 2
-[
-  {'rule_id': '1', 'result': True}, 
-  {'rule_id': '2', 'result': True}, 
-  {'rule_id': '3', 'result': False}
-]
+
+{
+  "results": [
+    {
+      "rule_id": "1",
+      "result": "Pass",
+      "expectation": "ExpectColumnValuesCountToMatch",
+      "expected": {
+        "group_by_column_values": [
+          "all"
+        ],
+        "measure_value": [
+          9
+        ]
+      },
+      "actual": {
+        "group_by_column_values": [
+          "all"
+        ],
+        "measure_value": [
+          9
+        ]
+      }
+    },
+    {
+      "rule_id": "2",
+      "result": "Pass",
+      "expectation": "ExpectColumnValueCountsMedianToMatch",
+      "expected": {
+        "group_by_column_values": [
+          "all"
+        ],
+        "measure_value": [
+          "2"
+        ]
+      },
+      "actual": {
+        "group_by_column_values": [
+          "all"
+        ],
+        "measure_value": [
+          "2"
+        ]
+      }
+    },
+    {
+      "rule_id": "3",
+      "result": "Pass",
+      "expectation": "ExpectColumnValuesSumToMatch",
+      "expected": {
+        "group_by_column_values": [
+          "1",
+          "2"
+        ],
+        "measure_value": [
+          -65000.0,
+          -5000.0
+        ]
+      },
+      "actual": {
+        "group_by_column_values": [
+          "1",
+          "2"
+        ],
+        "measure_value": [
+          -65000.0,
+          -5000.0
+        ]
+      }
+    },
+    {
+      "rule_id": "4",
+      "result": "Pass",
+      "expectation": "ExpectColumnUniqueValuesCountToMatch",
+      "expected": {
+        "group_by_column_values": [
+          "1",
+          "2"
+        ],
+        "measure_value": [
+          7,
+          2
+        ]
+      },
+      "actual": {
+        "group_by_column_values": [
+          "1",
+          "2"
+        ],
+        "measure_value": [
+          7,
+          2
+        ]
+      }
+    }
+  ]
+}
+
 ```

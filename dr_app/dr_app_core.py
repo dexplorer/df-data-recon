@@ -49,10 +49,10 @@ def apply_dr_rules(dataset_id) -> list:
     )
 
     df_src = pd.DataFrame.from_records(src_file_records)
-    print(df_src.loc[:0])
+    # print(df_src.loc[:0])
 
     df_recon = pd.DataFrame.from_records(src_recon_file_records)
-    print(df_recon.loc[:0])
+    # print(df_recon.loc[:0])
 
     batch = rb.DRBatch(df_src, df_recon)
 
@@ -72,7 +72,7 @@ def apply_dr_rules(dataset_id) -> list:
         gen_func = _locals["gen_func"]
         # print("core module - 1")
         # print(gen_func)
-        print(f"{dr_rule.kwargs}")
+        # print(f"{dr_rule.kwargs}")
         # Pass function specific keyword arguments to the generic function
         expectation = gen_func(**dr_rule.kwargs)
         # print("core module - 2")
@@ -91,19 +91,29 @@ def apply_dr_rules(dataset_id) -> list:
             print(validation_results)
 
             dr_check_result = fmt_dr_check_result(
-                rule_id=dr_rule.rule_id, dr_check_output=validation_results
+                rule_id=dr_rule.rule_id,
+                exp_name=dr_expectation.exp_name,
+                dr_check_output=validation_results,
             )
             dr_check_results.append(dr_check_result)
 
     return dr_check_results
 
 
-def fmt_dr_check_result(rule_id, dr_check_output) -> dict:
-    dr_check_status = dr_check_output["success"]
-
-    if dr_check_status:
-        dr_check_result = {"rule_id": rule_id, "result": dr_check_status}
+def fmt_dr_check_result(rule_id, exp_name, dr_check_output) -> dict:
+    if dr_check_output["success"]:
+        dr_check_status = "Pass"
     else:
-        dr_check_result = {"rule_id": rule_id, "result": False}
+        dr_check_status = "Fail"
+    dr_check_expected_value = dr_check_output["expected_value"]
+    dr_check_actual_value = dr_check_output["actual_value"]
+
+    dr_check_result = {
+        "rule_id": rule_id,
+        "result": dr_check_status,
+        "expectation": exp_name,
+        "expected": dr_check_expected_value,
+        "actual": dr_check_actual_value,
+    }
 
     return dr_check_result
