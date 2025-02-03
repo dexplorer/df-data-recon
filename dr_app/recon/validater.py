@@ -26,7 +26,6 @@ class DRBatch:
         self.df_src[self.dummy_column] = "all"
 
     def run_validation(self, expectation) -> DRValidationResult:
-        # print("recon module - 1")
 
         # Invoke the recon function
         # expectation points to the recon function with relevant arguments
@@ -41,7 +40,7 @@ class DRBatch:
         return result
 
     def count(self, column: str, group_by_column_names: list[str]):
-        print("Calculating the measure 'count'")
+        logging.info("Calculating the measure 'count'")
         ds = -1
 
         if isinstance(self.df_src, pd.DataFrame):
@@ -66,7 +65,7 @@ class DRBatch:
         return expected_value, actual_value
 
     def distinct(self, column: str, group_by_column_names: list[str]):
-        print("Calculating the measure 'distinct'")
+        logging.info("Calculating the measure 'distinct'")
         ds = -1
 
         if isinstance(self.df_src, pd.DataFrame):
@@ -91,7 +90,7 @@ class DRBatch:
 
 
     def median(self, column: str):
-        print("Calculating the measure 'median'")
+        logging.info("Calculating the measure 'median'")
         median_value = -1
 
         if isinstance(self.df_src, pd.DataFrame):
@@ -111,7 +110,7 @@ class DRBatch:
         return expected_value, actual_value
 
     def count_median(self, column: str):
-        print("Calculating the measure 'count_median'")
+        logging.info("Calculating the measure 'count_median'")
         median_value = -1
 
         if isinstance(self.df_src, pd.DataFrame):
@@ -138,7 +137,7 @@ class DRBatch:
         return expected_value, actual_value
 
     def sum(self, column: str, group_by_column_names: list[str]):
-        print("Calculating the measure 'sum'")
+        logging.info("Calculating the measure 'sum'")
         # ds = -1
 
         if isinstance(self.df_src, pd.DataFrame):

@@ -15,6 +15,11 @@
     dr_app apply-rules --dataset_id "2" --env "dev"
   ```
 
+- **Apply data reconciliation rules on a dataset via CLI with cycle date override**:
+  ```sh
+    dr_app apply-rules --dataset_id "2" --env "dev" --cycle_date "2024-12-24"
+  ```
+
 - **Apply data reconciliation rules on a dataset via API**:
   ##### Start the API server
   ```sh

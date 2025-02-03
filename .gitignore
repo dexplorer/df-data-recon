@@ -169,3 +169,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Hive metastore
+metastore_db/
+derby.log
+
+# Hive warehouse
+ingest_app/data/user/hive/warehouse
+derby.log

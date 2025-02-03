@@ -3,6 +3,7 @@ from metadata import dr_expectation as de
 from metadata import dr_rule as dr
 from app_calendar import eff_date as ed
 from utils import file_io as uff
+from utils import spark_io as ufs
 
 from dr_app import settings as sc
 from dr_app.recon import validater as rb
@@ -14,11 +15,18 @@ import pandas as pd
 # from funcsigs import signature
 
 
-def apply_dr_rules(dataset_id) -> list:
+def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
 
     # Simulate getting the dataset metadata from API
-    logging.info("Get dataset metadata")
-    dataset = ds.LocalDelimFileDataset.from_json(dataset_id)
+    # logging.info("Get base dataset metadata")
+    # dataset = ds.Dataset.from_json(dataset_id)
+
+    # if dataset.kind == ds.DatasetKind.LOCAL_DELIM_FILE:
+    #     dataset = ds.LocalDelimFileDataset.from_json(dataset_id)
+    # elif dataset.kind == ds.DatasetKind.SPARK_TABLE:
+    #     dataset = ds.SparkTableDataset.from_json(dataset_id)
+
+    dataset = ds.get_dataset_from_json(dataset_id=dataset_id)
 
     # Simulate getting all data reconciliation rules from API
     logging.info("Get all data reconciliation rules")
@@ -29,15 +37,30 @@ def apply_dr_rules(dataset_id) -> list:
     dr_rules_for_dataset = dr.get_dr_rules_by_dataset_id(dataset.dataset_id, dr_rules)
 
     # Get current effective date
-    cur_eff_date = ed.get_cur_eff_date(schedule_id=dataset.schedule_id)
+    cur_eff_date = ed.get_cur_eff_date(
+        schedule_id=dataset.schedule_id, cycle_date=cycle_date
+    )
     cur_eff_date_yyyymmdd = ed.fmt_date_str_as_yyyymmdd(cur_eff_date)
 
-    # Read the source data file
-    src_file_path = sc.resolve_app_path(
-        dataset.resolve_file_path(cur_eff_date_yyyymmdd)
-    )
-    logging.info("Reading the file %s", src_file_path)
-    src_file_records = uff.uf_read_delim_file_to_list_of_dict(file_path=src_file_path)
+    if dataset.kind == ds.DatasetKind.LOCAL_DELIM_FILE:
+        # Read the source data file
+        src_file_path = sc.resolve_app_path(
+            dataset.resolve_file_path(cur_eff_date_yyyymmdd)
+        )
+        logging.info("Reading the file %s", src_file_path)
+        src_file_records = uff.uf_read_delim_file_to_list_of_dict(
+            file_path=src_file_path
+        )
+
+    elif dataset.kind == ds.DatasetKind.SPARK_TABLE:
+        # Read the spark table
+        qual_target_table_name = dataset.get_qualified_table_name()
+        logging.info("Reading the spark table %s", qual_target_table_name)
+        src_file_records = ufs.read_spark_table_into_list_of_dict(
+            qual_target_table_name=qual_target_table_name,
+            cur_eff_date=cur_eff_date,
+            warehouse_path=sc.warehouse_path,
+        )
 
     # Read the source recon data file
     src_recon_file_path = sc.resolve_app_path(
@@ -70,16 +93,12 @@ def apply_dr_rules(dataset_id) -> list:
         exec(gen_func_str, globals(), _locals)
         # Grab the newly defined function name from the local namespace dictionary and assign it to generic function variable
         gen_func = _locals["gen_func"]
-        # print("core module - 1")
         # print(gen_func)
         # print(f"{dr_rule.kwargs}")
         # Pass function specific keyword arguments to the generic function
         expectation = gen_func(**dr_rule.kwargs)
-        # print("core module - 2")
         # print(inspect.getfullargspec(expectation))
-        # print("core module - 3")
         # print(str(expectation))
-        # print("core module - 4")
         # print(str(signature(expectation)))
 
         if expectation:
@@ -88,7 +107,7 @@ def apply_dr_rules(dataset_id) -> list:
             validation_results = vars(batch.run_validation(expectation))
 
             # Evaluate the Validation Results:
-            print(validation_results)
+            # print(validation_results)
 
             dr_check_result = fmt_dr_check_result(
                 rule_id=dr_rule.rule_id,

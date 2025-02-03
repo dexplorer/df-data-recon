@@ -13,7 +13,8 @@ from utils import logger as ufl
     "--dataset_id", type=str, default="dev", help="Source dataset id", required=True
 )
 @click.option("--env", type=str, default="dev", help="Environment")
-def apply_rules(dataset_id: str, env: str):
+@click.option("--cycle_date", type=str, default="", help="Cycle date")
+def apply_rules(dataset_id: str, env: str, cycle_date: str):
     """
     Apply data reconciliation rules for the dataset.
     """
@@ -28,7 +29,7 @@ def apply_rules(dataset_id: str, env: str):
     logging.info(
         "Start applying data reconciliation rules on the dataset %s", dataset_id
     )
-    dr_check_results = drc.apply_dr_rules(dataset_id=dataset_id)
+    dr_check_results = drc.apply_dr_rules(dataset_id=dataset_id, cycle_date=cycle_date)
 
     logging.info(
         "Finished applying data reconciliation rules on the dataset %s", dataset_id

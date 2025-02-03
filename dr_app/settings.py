@@ -41,6 +41,9 @@ def set_config(cfg):
     global source_file_path
     source_file_path = f"{resolve_app_path(cfg['source_file_path'])}"
 
+    global warehouse_path
+    warehouse_path = f"{resolve_app_path(cfg['warehouse_path'])}"
+
 
 def resolve_app_path(rel_path):
     return rel_path.replace("APP_ROOT_DIR", APP_ROOT_DIR)
