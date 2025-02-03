@@ -19,8 +19,7 @@ def apply_rules(dataset_id: str, env: str, cycle_date: str):
     Apply data reconciliation rules for the dataset.
     """
 
-    cfg = sc.load_config(env)
-    sc.set_config(cfg)
+    sc.load_config(env)
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
     ufl.config_logger(log_file_path_name=f"{sc.log_file_path}/{script_name}.log")

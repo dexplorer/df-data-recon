@@ -42,13 +42,14 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     )
     cur_eff_date_yyyymmdd = ed.fmt_date_str_as_yyyymmdd(cur_eff_date)
 
+    src_data_records = []
     if dataset.kind == ds.DatasetKind.LOCAL_DELIM_FILE:
         # Read the source data file
         src_file_path = sc.resolve_app_path(
             dataset.resolve_file_path(cur_eff_date_yyyymmdd)
         )
         logging.info("Reading the file %s", src_file_path)
-        src_file_records = uff.uf_read_delim_file_to_list_of_dict(
+        src_data_records = uff.uf_read_delim_file_to_list_of_dict(
             file_path=src_file_path
         )
 
@@ -56,11 +57,14 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         # Read the spark table
         qual_target_table_name = dataset.get_qualified_table_name()
         logging.info("Reading the spark table %s", qual_target_table_name)
-        src_file_records = ufs.read_spark_table_into_list_of_dict(
+        src_data_records = ufs.read_spark_table_into_list_of_dict(
             qual_target_table_name=qual_target_table_name,
             cur_eff_date=cur_eff_date,
             warehouse_path=sc.warehouse_path,
         )
+
+    df_src = pd.DataFrame.from_records(src_data_records)
+    # print(df_src.loc[:0])
 
     # Read the source recon data file
     src_recon_file_path = sc.resolve_app_path(
@@ -70,9 +74,6 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     src_recon_file_records = uff.uf_read_delim_file_to_list_of_dict(
         file_path=src_recon_file_path, delim=dataset.recon_file_delim
     )
-
-    df_src = pd.DataFrame.from_records(src_file_records)
-    # print(df_src.loc[:0])
 
     df_recon = pd.DataFrame.from_records(src_recon_file_records)
     # print(df_recon.loc[:0])

@@ -18,20 +18,19 @@ async def root():
 
 
 @app.get("/apply-rules/{dataset_id}")
-async def apply_rules(dataset_id: str, env: str = "dev"):
+async def apply_rules(dataset_id: str, env: str = "dev", cycle_date: str = ""):
     """
     Apply data reconciliation rules for the dataset.
     """
 
-    cfg = sc.load_config(env)
-    sc.set_config(cfg)
+    sc.load_config(env)
 
     logging.info("Configs are set")
 
     logging.info(
         "Start applying data reconciliation rules on the dataset %s", dataset_id
     )
-    dr_check_results = drc.apply_dr_rules(dataset_id=dataset_id)
+    dr_check_results = drc.apply_dr_rules(dataset_id=dataset_id, cycle_date=cycle_date)
 
     logging.info(
         "Finished applying data reconciliation rules on the dataset %s", dataset_id

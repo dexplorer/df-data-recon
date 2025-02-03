@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="dr_app",
-    version="1.0.0",
+    version="1.0.1",
     scripts=["./scripts/dr_app"],
     author="Rajakumaran Arivumani",
     description="Data reconciliation app install.",
