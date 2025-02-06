@@ -2,7 +2,7 @@ import logging
 import os
 
 import click
-from dr_app import settings as sc
+from dr_app.settings import ConfigParms as sc
 from dr_app import dr_app_core as drc
 from utils import logger as ufl
 
@@ -30,14 +30,12 @@ def apply_rules(dataset_id: str, env: str, cycle_date: str):
     )
     dr_check_results = drc.apply_dr_rules(dataset_id=dataset_id, cycle_date=cycle_date)
 
-    logging.info(
-        "Finished applying data reconciliation rules on the dataset %s", dataset_id
-    )
-
     logging.info("Data reconciliation check results for dataset %s", dataset_id)
     logging.info(dr_check_results)
 
-    return {"results": dr_check_results}
+    logging.info(
+        "Finished applying data reconciliation rules on the dataset %s", dataset_id
+    )
 
 
 # Create command group

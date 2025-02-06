@@ -5,7 +5,7 @@ from app_calendar import eff_date as ed
 from utils import file_io as uff
 from utils import spark_io as ufs
 
-from dr_app import settings as sc
+from dr_app.settings import ConfigParms as sc
 from dr_app.recon import validater as rb
 
 import logging

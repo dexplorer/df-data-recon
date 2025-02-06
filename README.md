@@ -2,9 +2,10 @@
 
 ### Install
 
-- **Install via setuptools**:
+- **Install via Makefile and pip**:
   ```sh
-    python setup.py install
+    make install
+    make setup
   ```
 
 
@@ -23,19 +24,20 @@
 - **Apply data reconciliation rules on a dataset via API**:
   ##### Start the API server
   ```sh
-    python dr_app/dr_app_api.py
+    python dr_app/dr_app_api.py --env "dev"
   ```
   ##### Invoke the API endpoint
   ```sh
-    https://<host name with port number>/apply-rules/{dataset_id}
-    https://<host name with port number>/apply-rules/2
+    https://<host name with port number>/apply-rules/?dataset_id=<value>
+    https://<host name with port number>/apply-rules/?dataset_id=<value>&cycle_date=<value>
+
+    /apply-rules/?dataset_id=2
+    /apply-rules/?dataset_id=2&cycle_date=2024-12-26
   ```
   ##### Invoke the API from Swagger Docs interface
   ```sh
     https://<host name with port number>/docs
 
-    /apply-rules/{dataset_id}
-    /apply-rules/2
   ```
 
 ### Sample Input
