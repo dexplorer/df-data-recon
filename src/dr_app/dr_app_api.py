@@ -2,12 +2,16 @@ import os
 import argparse
 import logging
 
-from dr_app.settings import ConfigParms as sc
+from config.settings import ConfigParms as sc
+from config import settings as scg
 from dr_app import dr_app_core as drc
 from utils import logger as ufl
 
 from fastapi import FastAPI
 import uvicorn
+
+#
+APP_ROOT_DIR = "/workspaces/df-data-recon"
 
 app = FastAPI()
 
@@ -52,8 +56,8 @@ async def apply_rules(dataset_id: str, cycle_date: str = ""):
     return {"results": dr_check_results}
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Data Profiling Application")
+def main():
+    parser = argparse.ArgumentParser(description="Data Reconciliation Application")
     parser.add_argument(
         "-e", "--env", help="Environment", const="dev", nargs="?", default="dev"
     )
@@ -63,6 +67,7 @@ if __name__ == "__main__":
     logging.info(args)
     env = args["env"]
 
+    scg.APP_ROOT_DIR = APP_ROOT_DIR
     sc.load_config(env=env)
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -77,3 +82,7 @@ if __name__ == "__main__":
         host="0.0.0.0",
         log_config=f"{sc.cfg_file_path}/api_log.ini",
     )
+
+
+if __name__ == "__main__":
+    main()

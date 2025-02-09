@@ -5,26 +5,24 @@
 - **Install via Makefile and pip**:
   ```sh
     make install
-    make setup
   ```
-
 
 ### Usage Examples
 
 - **Apply data reconciliation rules on a dataset via CLI**:
   ```sh
-    dr_app apply-rules --dataset_id "2" --env "dev"
+    dr-app-cli apply-rules --dataset_id "2" --env "dev"
   ```
 
 - **Apply data reconciliation rules on a dataset via CLI with cycle date override**:
   ```sh
-    dr_app apply-rules --dataset_id "2" --env "dev" --cycle_date "2024-12-24"
+    dr-app-cli apply-rules --dataset_id "2" --env "dev" --cycle_date "2024-12-24"
   ```
 
 - **Apply data reconciliation rules on a dataset via API**:
   ##### Start the API server
   ```sh
-    python dr_app/dr_app_api.py --env "dev"
+    dr-app-api --env "dev"
   ```
   ##### Invoke the API endpoint
   ```sh

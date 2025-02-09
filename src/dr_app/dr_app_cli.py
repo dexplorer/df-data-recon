@@ -2,12 +2,22 @@ import logging
 import os
 
 import click
-from dr_app.settings import ConfigParms as sc
+from config.settings import ConfigParms as sc
+from config import settings as scg
 from dr_app import dr_app_core as drc
 from utils import logger as ufl
 
+#
+APP_ROOT_DIR = "/workspaces/df-data-recon"
 
-@click.command()
+
+# Create command group
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
 # @click.argument('dataset_id', required=1)
 @click.option(
     "--dataset_id", type=str, default="dev", help="Source dataset id", required=True
@@ -19,7 +29,8 @@ def apply_rules(dataset_id: str, env: str, cycle_date: str):
     Apply data reconciliation rules for the dataset.
     """
 
-    sc.load_config(env)
+    scg.APP_ROOT_DIR = APP_ROOT_DIR
+    sc.load_config(env=env)
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
     ufl.config_logger(log_file_path_name=f"{sc.log_file_path}/{script_name}.log")
@@ -36,16 +47,6 @@ def apply_rules(dataset_id: str, env: str, cycle_date: str):
     logging.info(
         "Finished applying data reconciliation rules on the dataset %s", dataset_id
     )
-
-
-# Create command group
-@click.group()
-def cli():
-    pass
-
-
-# Add sub command to group
-cli.add_command(apply_rules)
 
 
 def main():

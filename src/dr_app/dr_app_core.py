@@ -2,10 +2,10 @@ from metadata import dataset as ds
 from metadata import dr_expectation as de
 from metadata import dr_rule as dr
 from app_calendar import eff_date as ed
-from utils import file_io as uff
+from utils import csv_io as ufc
 from utils import spark_io as ufs
 
-from dr_app.settings import ConfigParms as sc
+from config.settings import ConfigParms as sc
 from dr_app.recon import validater as rb
 
 import logging
@@ -16,6 +16,10 @@ import pandas as pd
 
 
 def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
+    # Simulate getting the cycle date from API
+    # Run this from the parent app
+    if not cycle_date:
+        cycle_date = ed.get_cur_cycle_date()
 
     # Simulate getting the dataset metadata from API
     # logging.info("Get base dataset metadata")
@@ -49,7 +53,7 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
             dataset.resolve_file_path(cur_eff_date_yyyymmdd)
         )
         logging.info("Reading the file %s", src_file_path)
-        src_data_records = uff.uf_read_delim_file_to_list_of_dict(
+        src_data_records = ufc.uf_read_delim_file_to_list_of_dict(
             file_path=src_file_path
         )
 
@@ -71,7 +75,7 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         dataset.resolve_recon_file_path(cur_eff_date_yyyymmdd)
     )
     logging.info("Reading the file %s", src_recon_file_path)
-    src_recon_file_records = uff.uf_read_delim_file_to_list_of_dict(
+    src_recon_file_records = ufc.uf_read_delim_file_to_list_of_dict(
         file_path=src_recon_file_path, delim=dataset.recon_file_delim
     )
 

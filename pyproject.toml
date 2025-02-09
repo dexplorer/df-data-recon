@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools >= 64.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dr_app"
+version = "0.0.1"
+authors = [
+  { name="Rajakumaran Arivumani", email="author@example.com" },
+]
+description = "Data reconciliation app package"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+#license = "MIT"
+#license-files = ["LICEN[CS]E*"]
+dependencies = [
+  # app specific 
+  "pandas >= 2.1.4",
+  "funcsigs", 
+  # my packages
+  "utils @ git+https://github.com/dexplorer/utils",
+  "metadata @ git+https://github.com/dexplorer/df-metadata",
+  "app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
+  "config @ git+https://github.com/dexplorer/df-config",
+]
+keywords = ["data", "recon", "etl", "elt", "framework", "governance"]
+
+[project.optional-dependencies]
+api = [
+  "fastapi" , 
+  "uvicorn[standard]", 
+  ]
+cli = [
+  "click",
+]
+test = [
+  # standard dev tools
+  "pytest",
+  "pytest-cov",
+  "pylint",
+  "black",
+  "ipython",
+]
+
+[project.scripts]
+dr-app-cli = "dr_app.dr_app_cli:main"
+dr-app-api = "dr_app.dr_app_api:main"
+
+[project.urls]
+Homepage = "https://profile.rajakumaran.in"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/dexplorer/df-data-recon.git"
+Issues = "https://github.com/dexplorer/df-data-recon/issues"
+Changelog = "https://github.com/dexplorer/df-data-recon/blob/master/CHANGELOG.md"

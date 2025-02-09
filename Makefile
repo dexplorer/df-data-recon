@@ -1,23 +1,23 @@
-install: requirements.txt
+install: pyproject.toml
 	pip install --upgrade pip &&\
-	pip install -r requirements.txt
-
-setup: 
-	# python setup.py install
-	pip install . 
+	pip install --editable . 
+	pip install .[cli] 
+	pip install .[api] 
+	pip install .[test]
+	
 
 lint:
-	pylint --disable=R,C *.py &&\
-	pylint --disable=R,C dr_app/*.py &&\
-	pylint --disable=R,C dr_app/tests/*.py
+	pylint --disable=R,C src/dr_app/*.py &&\
+	pylint --disable=R,C src/dr_app/*/*.py &&\
+	pylint --disable=R,C tests/*.py
 
 test:
-	python -m pytest -vv --cov=dr_app dr_app/tests
+	python -m pytest -vv --cov=src/dr_app tests
 
 format:
-	black *.py &&\
-	black dr_app/*.py &&\
-	black dr_app/tests/*.py
+	black src/dr_app/*.py &&\
+	black src/dr_app/*/*.py &&\
+	black tests/*.py
 
 all:
-	install setup lint format test
+	install lint format test
