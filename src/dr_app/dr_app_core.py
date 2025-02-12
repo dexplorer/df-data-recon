@@ -1,6 +1,6 @@
 from metadata import dataset as ds
 from metadata import dr_expectation as de
-from metadata import dr_rule as dr
+from metadata import dataset_dr_rule as dr
 from app_calendar import eff_date as ed
 from utils import csv_io as ufc
 from utils import spark_io as ufs
