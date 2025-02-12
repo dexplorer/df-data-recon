@@ -11,9 +11,6 @@ from dr_app.recon import validater as rb
 import logging
 import pandas as pd
 
-# import inspect
-# from funcsigs import signature
-
 
 def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     # Simulate getting the cycle date from API
@@ -91,28 +88,16 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         dr_expectation = de.DRExpectation.from_json(exp_id=dr_rule.exp_id)
 
         # Assign the GE function name to a string
-        gen_func_str = f"gen_func = batch.{dr_expectation.ge_method}"
-        # Get local variables
-        _locals = locals()
-        # Execute the function name assignment, this mutates the local namespace
-        exec(gen_func_str, globals(), _locals)
-        # Grab the newly defined function name from the local namespace dictionary and assign it to generic function variable
-        gen_func = _locals["gen_func"]
-        # print(gen_func)
-        # print(f"{dr_rule.kwargs}")
-        # Pass function specific keyword arguments to the generic function
+        func_name = dr_expectation.ge_method
+        # Get the function defined in the DR batch object
+        gen_func = getattr(batch, func_name)
+        # Pass the keyword arguments to the function
         expectation = gen_func(**dr_rule.kwargs)
-        # print(inspect.getfullargspec(expectation))
-        # print(str(expectation))
-        # print(str(signature(expectation)))
 
         if expectation:
-            # Test the Expectation
+            # Run the validation
             # Output the results object as dict
             validation_results = vars(batch.run_validation(expectation))
-
-            # Evaluate the Validation Results:
-            # print(validation_results)
 
             dr_check_result = fmt_dr_check_result(
                 rule_id=dr_rule.rule_id,

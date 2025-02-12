@@ -177,6 +177,7 @@ class DRBatch:
         logging.info("Calculating the measure 'sum'")
         # ds = -1
 
+        ds = pd.Series(dtype=float)
         if isinstance(self.df_src, pd.DataFrame):
             if column in self.df_src.columns:
                 if check_if_columns_in_df(
