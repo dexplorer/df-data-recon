@@ -20,12 +20,13 @@ classifiers = [
 dependencies = [
   # app specific 
   "pandas >= 2.1.4",
+  "python-dotenv", 
   "funcsigs", 
   # my packages
-  "utils @ git+https://github.com/dexplorer/utils",
-  "metadata @ git+https://github.com/dexplorer/df-metadata",
-  "app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
-  "config @ git+https://github.com/dexplorer/df-config",
+  #"utils @ git+https://github.com/dexplorer/utils",
+  #"metadata @ git+https://github.com/dexplorer/df-metadata",
+  #"app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
+  #"config @ git+https://github.com/dexplorer/df-config",
 ]
 keywords = ["data", "recon", "etl", "elt", "framework", "governance"]
 

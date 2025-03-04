@@ -1,5 +1,18 @@
 # df-data-recon
 
+This application reconciles the source data with the reconciliation control measures received from the source. Reconciliation controls (columns, aggregates) can be configured.
+
+Application can be invoked using CLI or REST API end points. This allows the app to be integrated into a larger data ingestion / distribution framework.
+
+### Define the environment variables
+
+Create a .env file with the following variables.
+
+```
+ENV=dev
+APP_ROOT_DIR=
+```
+
 ### Install
 
 - **Install via Makefile and pip**:
@@ -11,26 +24,26 @@
 
 - **Apply data reconciliation rules on a dataset via CLI**:
   ```sh
-    dr-app-cli apply-rules --dataset_id "2" --env "dev"
+    dr-app-cli apply-rules --dataset_id "dataset_2"
   ```
 
 - **Apply data reconciliation rules on a dataset via CLI with cycle date override**:
   ```sh
-    dr-app-cli apply-rules --dataset_id "2" --env "dev" --cycle_date "2024-12-24"
+    dr-app-cli apply-rules --dataset_id "dataset_2" --cycle_date "2024-12-24"
   ```
 
 - **Apply data reconciliation rules on a dataset via API**:
   ##### Start the API server
   ```sh
-    dr-app-api --env "dev"
+    dr-app-api
   ```
   ##### Invoke the API endpoint
   ```sh
     https://<host name with port number>/apply-rules/?dataset_id=<value>
     https://<host name with port number>/apply-rules/?dataset_id=<value>&cycle_date=<value>
 
-    /apply-rules/?dataset_id=2
-    /apply-rules/?dataset_id=2&cycle_date=2024-12-26
+    /apply-rules/?dataset_id=dataset_2
+    /apply-rules/?dataset_id=dataset_2&cycle_date=2024-12-26
   ```
   ##### Invoke the API from Swagger Docs interface
   ```sh
@@ -74,7 +87,7 @@ These are metadata that would be captured via the data reconciliation applicatio
 {
     "datasets": [
       {
-        "dataset_id": "2",
+        "dataset_id": "dataset_2",
         "dataset_kind": "local delim file",
         "catalog_ind": true,
         "file_delim": ",",
@@ -170,7 +183,7 @@ These are metadata that would be captured via the data reconciliation applicatio
 ### Sample Output 
 
 ```
-Data reconciliation check results for dataset 2
+Data reconciliation check results for dataset dataset_2
 
 {
   "results": [
