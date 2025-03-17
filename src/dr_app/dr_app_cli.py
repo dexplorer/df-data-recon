@@ -40,12 +40,10 @@ def main():
     load_dotenv()
 
     # Fail if env variable is not set
-    sc.env = os.environ["ENV"]
-    sc.app_root_dir = os.environ["APP_ROOT_DIR"]
     sc.load_config()
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
-    ufl.config_logger(log_file_path_name=f"{sc.log_file_path}/{script_name}.log")
+    ufl.config_logger(log_file_path_name=f"{sc.app_log_dir}/{script_name}.log")
     logging.info("Configs are set")
     logging.info(os.environ)
     logging.info(sc.config)

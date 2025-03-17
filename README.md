@@ -10,7 +10,8 @@ Create a .env file with the following variables.
 
 ```
 ENV=dev
-APP_ROOT_DIR=
+APP_ROOT_DIR=/workspaces/df-data-recon
+NAS_ROOT_DIR=/workspaces/nas
 ```
 
 ### Install

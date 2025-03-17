@@ -61,11 +61,11 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         src_data_records = ufs.read_spark_table_into_list_of_dict(
             qual_target_table_name=qual_target_table_name,
             cur_eff_date=cur_eff_date,
-            warehouse_path=sc.hive_warehouse_path,
+            warehouse_path=sc.hive_warehouse_dir,
         )
 
     df_src = pd.DataFrame.from_records(src_data_records)
-    print(df_src.loc[:0])
+    # print(df_src.loc[:0])
 
     # Read the source recon data file
     src_recon_file_path = sc.resolve_app_path(
@@ -77,7 +77,7 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     )
 
     df_recon = pd.DataFrame.from_records(src_recon_file_records)
-    print(df_recon.loc[:0])
+    # print(df_recon.loc[:0])
 
     batch = rb.DRBatch(df_src, df_recon)
 
