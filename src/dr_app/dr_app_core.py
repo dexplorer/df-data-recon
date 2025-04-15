@@ -1,10 +1,11 @@
 from metadata import dataset as ds
+from metadata import data_source as dsrc
 from metadata import dr_expectation as de
 from metadata import dataset_dr_rule as dr
 from app_calendar import eff_date as ed
 from utils import csv_io as ufc
 from utils import spark_io as ufs
-
+from utils import aws_s3_io as ufas
 from config.settings import ConfigParms as sc
 from dr_app.recon import validater as rb
 
@@ -18,16 +19,10 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     if not cycle_date:
         cycle_date = ed.get_cur_cycle_date()
 
-    # Simulate getting the dataset metadata from API
-    # logging.info("Get base dataset metadata")
-    # dataset = ds.Dataset.from_json(dataset_id)
-
-    # if dataset.dataset_type == ds.DatasetType.LOCAL_DELIM_FILE:
-    #     dataset = ds.LocalDelimFileDataset.from_json(dataset_id)
-    # elif dataset.dataset_type == ds.DatasetType.SPARK_TABLE:
-    #     dataset = ds.SparkTableDataset.from_json(dataset_id)
-
     dataset = ds.get_dataset_from_json(dataset_id=dataset_id)
+
+    # Simulate getting the data source metadata from API
+    data_source = dsrc.get_data_source_from_json(data_source_id=dataset.data_source_id)
 
     # Simulate getting all data reconciliation rules from API
     logging.info("Get all data reconciliation rules")
@@ -47,7 +42,10 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     if dataset.dataset_type == ds.DatasetType.LOCAL_DELIM_FILE:
         # Read the source data file
         src_file_path = sc.resolve_app_path(
-            dataset.resolve_file_path(cur_eff_date_yyyymmdd)
+            dataset.resolve_file_path(
+                date_str=cur_eff_date_yyyymmdd,
+                data_source_user=data_source.data_source_user,
+            )
         )
         logging.info("Reading the file %s", src_file_path)
         src_data_records = ufc.uf_read_delim_file_to_list_of_dict(
@@ -61,23 +59,53 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         src_data_records = ufs.read_spark_table_into_list_of_dict(
             qual_target_table_name=qual_target_table_name,
             cur_eff_date=cur_eff_date,
-            warehouse_path=sc.hive_warehouse_dir,
+            warehouse_path=sc.hive_warehouse_path,
+        )
+
+    elif dataset.dataset_type == ds.DatasetType.AWS_S3_DELIM_FILE:
+        # Read the source data file
+        src_file_uri = sc.resolve_app_path(
+            dataset.resolve_file_uri(
+                date_str=cur_eff_date_yyyymmdd,
+                data_source_user=data_source.data_source_user,
+            )
+        )
+        logging.info("Reading the file %s", src_file_uri)
+        src_data_records = ufas.uf_read_delim_file_to_list_of_dict(
+            s3_obj_uri=src_file_uri, s3_region=sc.s3_region
         )
 
     df_src = pd.DataFrame.from_records(src_data_records)
-    # print(df_src.loc[:0])
 
-    # Read the source recon data file
-    src_recon_file_path = sc.resolve_app_path(
-        dataset.resolve_recon_file_path(cur_eff_date_yyyymmdd)
-    )
-    logging.info("Reading the file %s", src_recon_file_path)
-    src_recon_file_records = ufc.uf_read_delim_file_to_list_of_dict(
-        file_path=src_recon_file_path, delim=dataset.recon_file_delim
-    )
+    src_recon_data_records = []
+    if dataset.dataset_type == ds.DatasetType.LOCAL_DELIM_FILE:
+        # Read the source recon data file
+        src_recon_file_path = sc.resolve_app_path(
+            dataset.resolve_recon_file_path(
+                date_str=cur_eff_date_yyyymmdd,
+                data_source_user=data_source.data_source_user,
+            )
+        )
+        logging.info("Reading the file %s", src_recon_file_path)
+        src_recon_data_records = ufc.uf_read_delim_file_to_list_of_dict(
+            file_path=src_recon_file_path, delim=dataset.recon_file_delim
+        )
+    elif dataset.dataset_type == ds.DatasetType.AWS_S3_DELIM_FILE:
+        # Read the source recon data file
+        src_recon_file_uri = sc.resolve_app_path(
+            dataset.resolve_recon_file_uri(
+                date_str=cur_eff_date_yyyymmdd,
+                data_source_user=data_source.data_source_user,
+            )
+        )
+        logging.info("Reading the file %s", src_recon_file_uri)
+        src_recon_data_records = ufas.uf_read_delim_file_to_list_of_dict(
+            s3_obj_uri=src_recon_file_uri,
+            s3_region=sc.s3_region,
+            delim=dataset.recon_file_delim,
+        )
 
-    df_recon = pd.DataFrame.from_records(src_recon_file_records)
-    # print(df_recon.loc[:0])
+    df_recon = pd.DataFrame.from_records(src_recon_data_records)
 
     batch = rb.DRBatch(df_src, df_recon)
 

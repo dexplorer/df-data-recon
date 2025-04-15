@@ -21,21 +21,26 @@ dependencies = [
   # app specific 
   "pandas >= 2.1.4",
   "python-dotenv", 
-  "funcsigs", 
-  # my packages
-  "utils",
-  "metadata",
-  "app_calendar",
-  "config",
-  # my packages
-  #"utils @ git+https://github.com/dexplorer/utils",
-  #"metadata @ git+https://github.com/dexplorer/df-metadata",
-  #"app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
-  #"config @ git+https://github.com/dexplorer/df-config",
 ]
 keywords = ["data", "recon", "etl", "elt", "framework", "governance"]
 
 [project.optional-dependencies]
+my-packages-local = [
+  # my packages (installed locally)
+  "utils[spark]",
+  "utils[aws]",
+  "metadata",
+  "app_calendar",
+  "config",
+]
+my-packages-container = [
+  # my packages (source in container)
+  "utils[spark] @ file:///packages/utils",
+  "utils[aws] @ file:///packages/utils",
+  "metadata @ file:///packages/df-metadata",
+  "app_calendar @ file:///packages/df-app-calendar",
+  "config @ file:///packages/df-config",
+]
 api = [
   "fastapi" , 
   "uvicorn[standard]", 
@@ -51,6 +56,12 @@ test = [
   "black",
   "ipython",
 ]
+all-dev = [
+  "dr_app[my-packages-local, cli, api, test]"
+  ]
+all = [
+  "dr_app[my-packages-container, cli, api]"
+  ]
 
 [project.scripts]
 dr-app-cli = "dr_app.dr_app_cli:main"
