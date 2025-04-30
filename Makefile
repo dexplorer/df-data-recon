@@ -26,6 +26,12 @@ local-all: install-dev lint format test
 IMAGE := df-data-recon
 IMAGE_TAG := latest
 PYTHON_VERSION := 3.12
+# HADOOP_AWS_VERSION := 3.4.1
+HADOOP_AWS_VERSION := 3.3.4
+# AWS_JAVA_SDK_VERSION := 2.31.21
+AWS_JAVA_SDK_VERSION := 1.12.782
+SCALA_VERSION := 2.12
+SPARK_VERSION := 3.5.4
 HOST_PORT := 9090
 CONTAINER_PORT := 9090
 
@@ -42,6 +48,10 @@ build-image:
 	--build-context df-config=/home/ec2-user/workspaces/df-config \
 	--build-arg PYTHON_VERSION=${PYTHON_VERSION} \
 	--build-arg CONTAINER_PORT=${CONTAINER_PORT} \
+	--build-arg HADOOP_AWS_VERSION=${HADOOP_AWS_VERSION} \
+	--build-arg AWS_JAVA_SDK_VERSION=${AWS_JAVA_SDK_VERSION} \
+	--build-arg SCALA_VERSION=${SCALA_VERSION} \
+	--build-arg SPARK_VERSION=${SPARK_VERSION} \
 	-t ${IMAGE}:${IMAGE_TAG} .
 
 build-clean-image:
@@ -53,6 +63,10 @@ build-clean-image:
 	--build-arg PYTHON_VERSION=${PYTHON_VERSION} \
 	--build-arg CONTAINER_PORT=${CONTAINER_PORT} \
 	--no-cache \
+	--build-arg HADOOP_AWS_VERSION=${HADOOP_AWS_VERSION} \
+	--build-arg AWS_JAVA_SDK_VERSION=${AWS_JAVA_SDK_VERSION} \
+	--build-arg SCALA_VERSION=${SCALA_VERSION} \
+	--build-arg SPARK_VERSION=${SPARK_VERSION} \
 	-t ${IMAGE}:${IMAGE_TAG} .
 # --no-cache forces docker to rebuild all layers from scratch
 

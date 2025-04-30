@@ -9,10 +9,10 @@ Application can be invoked using CLI or REST API end points. This allows the app
 Update one of the following .env files which is appropriate for the application hosting pattern.
 
 ```
-on_prem_vm_native.env
-aws_ec2_native.env
-aws_ec2_container.env
-aws_ecs_container.env
+.env.on_prem_vm_native
+.env.aws_ec2_native
+.env.aws_ec2_container
+.env.aws_ecs_container
 ```
 
 ### Install
@@ -59,7 +59,7 @@ aws_ecs_container.env
 - **via CLI**:
   ```sh
     docker run \
-    --mount=type=bind,src=/home/ec2-user/workspaces/nas,dst=/nas \
+    --mount=type=bind,src=/nas,dst=/nas \
     --rm -it df-data-recon \
     dr-app-cli --app_host_pattern "aws_ec2_container" apply-rules --dataset_id "dataset_2"
   ```
@@ -67,7 +67,7 @@ aws_ecs_container.env
 - **via CLI with Cycle Date Override**:
   ```sh
     docker run \
-    --mount=type=bind,src=/home/ec2-user/workspaces/nas,dst=/nas \
+    --mount=type=bind,src=/nas,dst=/nas \
     --rm -it df-data-recon:latest \
     dr-app-cli --app_host_pattern "aws_ec2_container" apply-rules --dataset_id "dataset_2" --cycle_date "2024-12-26"
   ```
@@ -76,7 +76,7 @@ aws_ecs_container.env
   ##### Start the API server
   ```sh
     docker run \
-    --mount=type=bind,src=/home/ec2-user/workspaces/nas,dst=/nas \
+    --mount=type=bind,src=/nas,dst=/nas \
     -p 9090:9090 \
     --rm -it df-data-recon:latest \
     dr-app-api --app_host_pattern "aws_ec2_container"

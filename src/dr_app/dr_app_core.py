@@ -3,6 +3,7 @@ from metadata import data_source as dsrc
 from metadata import dr_expectation as de
 from metadata import dataset_dr_rule as dr
 from app_calendar import eff_date as ed
+from pyspark.sql import SparkSession
 from utils import csv_io as ufc
 from utils import spark_io as ufs
 from utils import aws_s3_io as ufas
@@ -24,6 +25,11 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     # Simulate getting the data source metadata from API
     data_source = dsrc.get_data_source_from_json(data_source_id=dataset.data_source_id)
 
+    # Simulate getting the recon data source metadata from API
+    recon_data_source = dsrc.get_data_source_from_json(
+        data_source_id=dataset.recon_data_source_id
+    )
+
     # Simulate getting all data reconciliation rules from API
     logging.info("Get all data reconciliation rules")
     dr_rules = dr.get_all_dr_rules_from_json()
@@ -37,6 +43,13 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         schedule_id=dataset.schedule_id, cycle_date=cycle_date
     )
     cur_eff_date_yyyymmdd = ed.fmt_date_str_as_yyyymmdd(cur_eff_date)
+
+    # Create spark session
+    if dataset.dataset_type == ds.DatasetType.SPARK_TABLE:
+        logging.info("Creating spark session using spark connect")
+        spark: SparkSession = ufs.create_spark_session_using_connect(
+            spark_connect_uri=sc.spark_connect_uri,
+        )
 
     src_data_records = []
     if dataset.dataset_type == ds.DatasetType.LOCAL_DELIM_FILE:
@@ -59,8 +72,9 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         src_data_records = ufs.read_spark_table_into_list_of_dict(
             qual_target_table_name=qual_target_table_name,
             cur_eff_date=cur_eff_date,
-            warehouse_path=sc.hive_warehouse_path,
+            spark=spark,
         )
+        # print(src_data_records)
 
     elif dataset.dataset_type == ds.DatasetType.AWS_S3_DELIM_FILE:
         # Read the source data file
@@ -78,24 +92,25 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
     df_src = pd.DataFrame.from_records(src_data_records)
 
     src_recon_data_records = []
-    if dataset.dataset_type == ds.DatasetType.LOCAL_DELIM_FILE:
+    if dataset.recon_dataset_type == ds.DatasetType.LOCAL_DELIM_FILE:
         # Read the source recon data file
         src_recon_file_path = sc.resolve_app_path(
             dataset.resolve_recon_file_path(
                 date_str=cur_eff_date_yyyymmdd,
-                data_source_user=data_source.data_source_user,
+                data_source_user=recon_data_source.data_source_user,
             )
         )
         logging.info("Reading the file %s", src_recon_file_path)
         src_recon_data_records = ufc.uf_read_delim_file_to_list_of_dict(
             file_path=src_recon_file_path, delim=dataset.recon_file_delim
         )
-    elif dataset.dataset_type == ds.DatasetType.AWS_S3_DELIM_FILE:
+        # print(src_recon_data_records)
+    elif dataset.recon_dataset_type == ds.DatasetType.AWS_S3_DELIM_FILE:
         # Read the source recon data file
         src_recon_file_uri = sc.resolve_app_path(
             dataset.resolve_recon_file_uri(
                 date_str=cur_eff_date_yyyymmdd,
-                data_source_user=data_source.data_source_user,
+                data_source_user=recon_data_source.data_source_user,
             )
         )
         logging.info("Reading the file %s", src_recon_file_uri)
@@ -134,6 +149,7 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
             )
             dr_check_results.append(dr_check_result)
 
+    # print(dr_check_results)
     return dr_check_results
 
 
