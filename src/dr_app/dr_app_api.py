@@ -1,11 +1,13 @@
-import os
+import argparse
 import logging
+import os
+
+import uvicorn
+from fastapi import FastAPI
+
 from config.settings import ConfigParms as sc
 from dr_app import dr_app_core as drc
 from utils import logger as ufl
-import argparse
-from fastapi import FastAPI
-import uvicorn
 
 app = FastAPI()
 

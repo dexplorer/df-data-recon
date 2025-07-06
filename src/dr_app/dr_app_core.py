@@ -1,17 +1,18 @@
-from metadata import dataset as ds
-from metadata import data_source as dsrc
-from metadata import dr_expectation as de
-from metadata import dataset_dr_rule as dr
-from app_calendar import eff_date as ed
+import logging
+
+import pandas as pd
 from pyspark.sql import SparkSession
-from utils import csv_io as ufc
-from utils import spark_io as ufs
-from utils import aws_s3_io as ufas
+
+from app_calendar import eff_date as ed
 from config.settings import ConfigParms as sc
 from dr_app.recon import validater as rb
-
-import logging
-import pandas as pd
+from metadata import data_source as dsrc
+from metadata import dataset as ds
+from metadata import dataset_dr_rule as dr
+from metadata import dr_expectation as de
+from utils import aws_s3_io as ufas
+from utils import csv_io as ufc
+from utils import spark_io as ufs
 
 
 def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
@@ -70,7 +71,7 @@ def apply_dr_rules(dataset_id: str, cycle_date: str) -> list:
         qual_target_table_name = dataset.get_qualified_table_name()
         logging.info("Reading the spark table %s", qual_target_table_name)
         src_data_records = ufs.read_spark_table_into_list_of_dict(
-            qual_target_table_name=qual_target_table_name,
+            qual_table_name=qual_target_table_name,
             cur_eff_date=cur_eff_date,
             spark=spark,
         )

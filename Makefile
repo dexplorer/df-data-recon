@@ -19,6 +19,10 @@ format:
 	black src/${APP}/*/*.py &&\
 	black tests/*.py
 
+	isort src/${APP}/*.py &&\
+	isort src/${APP}/*/*.py &&\
+	isort tests/*.py
+
 local-all: install-dev lint format test
 
 # Docker

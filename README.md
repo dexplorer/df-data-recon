@@ -9,10 +9,10 @@ Application can be invoked using CLI or REST API end points. This allows the app
 Update one of the following .env files which is appropriate for the application hosting pattern.
 
 ```
-.env.on_prem_vm_native
-.env.aws_ec2_native
-.env.aws_ec2_container
-.env.aws_ecs_container
+app_env.on_prem_vm_native.dev.env
+app_env.aws_ec2_native.dev.env
+app_env.aws_ec2_container.dev.env
+app_env.aws_ecs_container.dev.env
 ```
 
 ### Install

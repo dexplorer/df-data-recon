@@ -55,6 +55,7 @@ test = [
   "pylint",
   "black",
   "ipython",
+  "isort",
 ]
 all-dev = [
   "dr_app[my-packages-local, cli, api, test]"
@@ -73,3 +74,14 @@ Documentation = "https://readthedocs.org"
 Repository = "https://github.com/dexplorer/df-data-recon.git"
 Issues = "https://github.com/dexplorer/df-data-recon/issues"
 Changelog = "https://github.com/dexplorer/df-data-recon/blob/master/CHANGELOG.md"
+
+[tool.black]
+#line-length = 79
+
+[tool.isort]
+profile = "black"
+#line_length = 79
+known_third_party = ["pyspark"]  
+known_first_party = ["utils", "metadata", "app_calendar", "config", "dr_app"]  
+sections = ["FUTURE","STDLIB","THIRDPARTY","FIRSTPARTY","LOCALFOLDER"]
+src_paths = ["src", "dr_app"]  

@@ -58,15 +58,13 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:latest as runner
 
 # Update installed packages and install system dependencies
 RUN dnf update -y \
-    && dnf install -y make \
-    && dnf install -y git \
     && dnf install -y findutils \
     && dnf install -y tree \
+    && dnf install -y shadow-utils \
     && dnf install -y java-17-amazon-corretto \
     && dnf install -y procps
 # findutils is needed for xargs command
 # shadow-utils is needed for useradd command
-# && \ dnf install -y shadow-utils
 # java-17-amazon-corretto, procps are needed for pyspark
 
 ARG PYTHON_VERSION
@@ -107,3 +105,4 @@ CMD ["/bin/bash"]
 # CMD ["dr-app-api"]
 # CMD ["dr-app-api", "--debug"]
 # CMD ["dr-app-api", "--debug", "y"]
+# CMD ["dr-app-api", "--app_host_pattern", "aws_ecs_container"]
